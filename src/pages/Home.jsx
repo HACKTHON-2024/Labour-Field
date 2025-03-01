@@ -5,12 +5,80 @@ function Home() {
   useEffect(() => {
     // Enable smooth scrolling
     document.documentElement.style.scrollBehavior = 'smooth';
+
+    // Add network status monitoring
+    window.addEventListener('online', handleNetworkChange);
+    window.addEventListener('offline', handleNetworkChange);
+
+    // Initial network check
+    checkNetworkStatus();
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener('online', handleNetworkChange);
+      window.removeEventListener('offline', handleNetworkChange);
+    };
   }, []);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State to manage menu visibility
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const [isLogin, setIsLogin] = useState(true); // Flag to track if it's login or signup
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen); // Toggle menu visibility
+  };
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen); // Toggle modal visibility
+  };
+
+  // Function to check network status initially
+  function checkNetworkStatus() {
+    if (!navigator.onLine) {
+      window.location.href = 'https://labourfieldtest.onrender.com/frontend/static/network-error.html';
+    }
+  }
+
+  // Function to handle network changes
+  function handleNetworkChange(event) {
+    if (!navigator.onLine) {
+      window.location.href = 'https://labourfieldtest.onrender.com/frontend/static/network-error.html';
+    }
+  }
+
+  // Check if user is logged in
+  const userLoggedIn = localStorage.getItem('jwt') !== null; // Assuming a token is saved on login
+
+  // Modify the checkAuthAndRedirect function
+  function checkAuthAndRedirect() {
+    const jwt = localStorage.getItem('jwt');
+    const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+    
+    if (jwt) {
+      // User is logged in - hide login/signup buttons
+      if (loginBtn) loginBtn.style.display = "none";
+      if (signupBtn) signupBtn.style.display = "none";
+    } else {
+      // User is not logged in - show login/signup buttons
+      if (loginBtn) loginBtn.style.display = "block";
+      if (signupBtn) signupBtn.style.display = "block";
+    }
+  }
+
+  // Initialize when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    checkAuthAndRedirect();
+  });
+
+  // Function to handle login/signup redirection
+  const handleUserTypeSelection = (userType) => {
+    localStorage.setItem('userType', userType); // Set user type
+    const redirectUrl = userType === 'labour' 
+      ? (isLogin ? "https://labourfieldtest.onrender.com/frontend/Labours/Login_Page/index.html" : "https://labourfieldtest.onrender.com/frontend/Labours/SIgnUp_Page/index.html")
+      : (isLogin ? "https://labourfieldtest.onrender.com/frontend/Landowner/signin/index.html" : "https://labourfieldtest.onrender.com/frontend/Landowner/SIgnUp_Page/index.html");
+    
+    window.location.href = redirectUrl; // Redirect to the appropriate page
   };
 
   return (
@@ -57,15 +125,52 @@ function Home() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-5">Connecting Landlords & Laborers</h1>
           <p className="text-lg md:text-xl text-green-100 mb-8">Find the right labor for your needs or post your job requirements and get help in no time.</p>
           <div className="space-x-4">
-            <a href="#" className="bg-white text-green-600 px-6 py-3 rounded-full shadow-lg hover:bg-green-700 hover:text-white transition duration-300 ease-in-out transform hover:scale-105">
+            <button onClick={() => { setIsLogin(false); toggleModal(); }} className="bg-white text-green-600 px-6 py-3 rounded-full shadow-lg hover:bg-green-700 hover:text-white transition duration-300 ease-in-out transform hover:scale-105">
               Sign up
-            </a>
-            <a href="#" className="bg-white text-green-600 px-6 py-3 rounded-full shadow-lg hover:bg-green-700 hover:text-white transition duration-300 ease-in-out transform hover:scale-105">
+            </button>
+            <button onClick={() => { setIsLogin(true); toggleModal(); }} className="bg-white text-green-600 px-6 py-3 rounded-full shadow-lg hover:bg-green-700 hover:text-white transition duration-300 ease-in-out transform hover:scale-105">
               Log In
-            </a>
+            </button>
           </div>
         </div>
       </section>
+
+      {/* User Type Selection Modal */}
+      {isModalOpen && (
+        <>
+          {/* Overlay */}
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black" style={{'opacity': '0.7'}}></div> {/* Separate overlay with opacity */}
+
+          {/* User Type Selection Modal */}
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full relative"> {/* Adjusted padding and max-width */}
+              <button 
+                onClick={toggleModal} 
+                className="absolute top-0 right-2 text-red-500 hover:text-red-700 transition duration-300 text-4xl">
+                &times; {/* Close icon */}
+              </button>
+              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800"> {/* Adjusted font size */}
+                {isLogin ? 'Select User Type for Login' : 'Select User Type for Signup'}
+              </h2>
+              <p className="text-center mb-4 text-gray-600 text-lg">
+                Please choose your user type to proceed with {isLogin ? 'logging in' : 'signing up'}.
+              </p>
+              <div className="flex flex-col space-y-4"> {/* Stack buttons vertically on small screens */}
+                <button 
+                  onClick={() => handleUserTypeSelection('labour')} 
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300 text-lg">
+                  Labour
+                </button>
+                <button 
+                  onClick={() => handleUserTypeSelection('landowner')} 
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300 text-lg">
+                  Landowner
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Features Section */}
       <section className="features bg-white py-16 px-4" id="features">
@@ -133,14 +238,14 @@ function Home() {
               imgSrc: 'https://labourfieldtest.onrender.com/frontend/static/Images/melvin.jpg',
               quote: 'The greatest threat to our planet is the belief that someone else will save it.',
               link: '#',
-              borderColor: 'border-blue-600',
+              borderColor: 'border-green-600',
             },
             {
               name: 'Jothika R M',
               imgSrc: 'https://labourfieldtest.onrender.com/frontend/static/Images/jothika.jpg',
               quote: 'We must plant the seeds of change, and nurture them daily through our actions and choices.',
               link: '#',
-              borderColor: 'border-purple-600',
+              borderColor: 'border-green-600',
             },
           ].map((creator, index) => (
             <motion.div
