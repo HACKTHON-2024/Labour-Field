@@ -36,9 +36,7 @@ const Header = () => {
 
             {/* Mobile Sidebar Navigation (Opens from the Right) */}
             <div
-                className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-                    isMenuOpen ? "translate-x-0" : "translate-x-full"
-                }`}
+                className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
             >
                 {/* Close Button */}
                 <button onClick={toggleMenu} className="absolute top-4 left-4 text-gray-800 hover:text-green-700">
@@ -58,7 +56,7 @@ const Header = () => {
 
             {/* Overlay (Does NOT hide the header) */}
             {isMenuOpen && (
-                <div className="fixed inset-0 bg-opacity-50 z-40 md:hidden" onClick={toggleMenu}></div>
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" onClick={toggleMenu}></div>
             )}
         </header>
     );
