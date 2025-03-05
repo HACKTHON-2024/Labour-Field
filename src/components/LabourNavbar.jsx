@@ -12,15 +12,15 @@ const LabourNavbar = () => {
 
   return (
     <div>
-      <nav className={`fixed top-12 left-0 h-full transition-all duration-300 ease-in-out z-40 ${isOpen ? 'w-64' : 'w-16'} bg-gradient-to-b from-gray-800 to-gray-900`}>
+      <nav className={`fixed top-12 left-0 h-full transition-all duration-300 ease-in-out z-40 ${isOpen ? 'w-64' : 'w-16'} bg-white border-r-4 border-green-500`}>
         <button 
           onClick={toggleNavbar} 
-          className="p-2 text-white rounded z-40 absolute top-4 left-4"
+          className="p-2 text-white rounded z-40 absolute top-4 left-4 bg-green-500"
         >
-          <span className="mx-2">{isOpen ? "<" : ">"}</span>
+          <span className="mx-2">{isOpen ? "▼" : "►"}</span>
         </button>
         
-        <ul className={`mt-12 flex flex-col items-center`}>
+        <ul className={`mt-12 flex flex-col items-center space-y-4`}>
           <li className="w-full flex justify-center mb-4">
             <Link to="/labour/dashboard" className="navbar__link flex items-center justify-center p-2 text-white whitespace-nowrap relative gap-4 hover:bg-green-600 transition duration-300 rounded">
               <FaHome className="text-lg" />
